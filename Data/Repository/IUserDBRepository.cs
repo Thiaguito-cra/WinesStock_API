@@ -9,7 +9,7 @@ namespace Data.Repository
 {
     public interface IUserDBRepository
     {
-        public List<User> GetUsers();
-        void AddUser(User user);
+        public List<User> Get();
+        public User? Get(string username);
     }
 }

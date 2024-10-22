@@ -1,4 +1,5 @@
 ﻿using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -7,6 +8,7 @@ namespace WineInventory.Controllers
 {
     [Route("api/wine")]
     [ApiController]
+    [Authorize]
     public class WineController : ControllerBase
     {
         public readonly IWineServices _wineServices;
@@ -21,14 +23,7 @@ namespace WineInventory.Controllers
             if (wineDTO == null)
                 return BadRequest("The body request is null");
 
-            try
-            {
-                _wineServices.AddWine(wineDTO);
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest("This wine already exists");
-            }
+            _wineServices.AddWine(wineDTO);
             return Created("Location", "Resource");
         }
 
@@ -36,6 +31,19 @@ namespace WineInventory.Controllers
         public IActionResult GetAllWinesStock()
         {
             return Ok(_wineServices.GetAllWinesStock());
+        }
+
+        [HttpGet("{variety}")]
+        public IActionResult GetWineStockByVariety([FromRoute] string variety) 
+        {
+            return Ok();
+        }
+
+        [HttpPut("update-stock/{wineId}")]
+        public IActionResult UpdateStock(int wineId, [FromBody] int newStock)
+        {
+            _wineServices.UpdateWineStock(wineId, newStock);
+            return NoContent();
         }
     }
 }

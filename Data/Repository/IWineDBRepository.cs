@@ -9,8 +9,10 @@ namespace Data.Repository
 {
     public interface IWineDBRepository
     {
-        public List<Wine> GetWines();
+        List<Wine> GetWines();
+        Wine? Get(int id);
         void AddWine(Wine wine);
         Dictionary<string, int> GetAllWinesStock();
+        void WineStockUpdate(int id, int stock)
     }
 }

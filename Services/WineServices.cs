@@ -11,37 +11,48 @@ namespace Services
 {
     public class WineServices : IWineServices
     {
-        public readonly IWineDBRepository _wineHardCodedDBRepository;
-        public WineServices(IWineDBRepository hardCodedDBRepository)
+        public readonly IWineDBRepository _wineRepository;
+        public WineServices(IWineDBRepository wineRepository)
         {
-            _wineHardCodedDBRepository = hardCodedDBRepository;
+            _wineRepository = wineRepository;
         }
 
 
         public void AddWine(WineDTO createWineDTO)
         {
-            if (_wineHardCodedDBRepository.GetWines().All(wine => wine.Name != createWineDTO.Name))
+            if (_wineRepository.GetWines().All(wine => wine.Name != createWineDTO.Name))
             {
-                _wineHardCodedDBRepository.AddWine(
+                _wineRepository.AddWine(
                 new Wine
                 {
-                    Id = _wineHardCodedDBRepository.GetWines().Max(x => x.Id) + 1,
+                    Id = _wineRepository.GetWines().Max(x => x.Id) + 1,
                     Name = createWineDTO.Name,
                     Variety = createWineDTO.Variety,
                     Year = createWineDTO.Year,
                     Region = createWineDTO.Region,
                     Stock = createWineDTO.Stock,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow
                 }
-                );
+            );
             }
-            else throw new InvalidOperationException();
         }
 
         public Dictionary<string, int> GetAllWinesStock()
         {
-            return _wineHardCodedDBRepository.GetAllWinesStock();
+            return _wineRepository.GetAllWinesStock();
+        }
+
+        public void WineStockUpdate(int wineId, int newStock)
+        {
+            var wine = _wineRepository.Get(wineId);
+            if (wine == null)
+            {
+                throw new KeyNotFoundException("Wine not found.");
+            }
+
+            _wineRepository.WineStockUpdate(wineId, newStock);
+
+         
         }
     }
-
 }

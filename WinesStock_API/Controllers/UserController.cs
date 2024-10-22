@@ -1,4 +1,5 @@
 ﻿using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -7,6 +8,7 @@ namespace WineInventory.Controllers
 {
     [Route("api/user")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         public readonly IUserServices _userServices;
@@ -20,14 +22,8 @@ namespace WineInventory.Controllers
         {
             if (userDTO == null)
                 return BadRequest("The body request is null");
-            try
-            {
-                _userServices.AddUser(userDTO);
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest("This username alredy exists");
-            }
+            
+            _userServices.AddUser(userDTO);
             return Created("Location", "Resource");
         }
     }

@@ -4,6 +4,7 @@ using Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,28 +12,32 @@ namespace Services
 {
     public class UserServices : IUserServices
     {
-        public readonly IUserDBRepository _userHardCodedDBRepository;
-        public UserServices(IUserDBRepository userHardCodedDBRepository)
+        public readonly IUserDBRepository _userDbRepository;
+        public UserServices(IUserDBRepository userDBRepository)
         {
-            _userHardCodedDBRepository = userHardCodedDBRepository;
+            _userDbRepository = userDBRepository;
         }
 
         public void AddUser(UserDTO createUserDTO)
         {
-            if (_userHardCodedDBRepository.GetUsers().All(user => user.Username != createUserDTO.UserName))
+            if (_userDbRepository.GetUsers().All(user => user.Username != createUserDTO.Username))
             {
-                _userHardCodedDBRepository.AddUser(
+                _userDbRepository.AddUser(
                     new User
                     {
-                        Id = _userHardCodedDBRepository.GetUsers().Max(x => x.Id) + 1,
+                        Id = _userDbRepository.GetUsers().Max(x => x.Id) + 1,
                         Username = createUserDTO.Username,
                         Password = createUserDTO.Password
                     }
                     );
             }
-            else
+        }
+            public User? AuthenticateUser(UserForAuth authRequestBody)
             {
-                throw new InvalidOperationException();
+                User? userToReturn = _userDbRepository.Get(authRequestBody.Username);
+                if (userToReturn is not null && userToReturn.Password == authRequestBody.Password)
+                    return userToReturn;
+                return null;
             }
         }
     }

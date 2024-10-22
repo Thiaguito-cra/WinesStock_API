@@ -1,78 +1,44 @@
 ﻿using Data.Entities;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repository
 {
-    public class WineHardCodedDBRepository : IWineHardCodedDBRepository
+    public class WineDBRepository : IWineDBRepository
     {
-        private List<Wine> wines = new List<Wine>()
+        private readonly ApplicationContext _context;
+
+        public WineDBRepository(ApplicationContext context)
         {
-            new Wine
-            {
-                Id = 1,
-                Name = "Malbec Reserve",
-                Variety = "Malbec",
-                Year = 2018,
-                Region = "Mendoza",
-                Stock = 33,
-                CreatedAt = new DateTime(2020, 5, 15)
-            },
-            new Wine
-            {
-                Id = 2,
-                Name = "Cabernet Sauvignon Premium",
-                Variety = "Cabernet Sauvignon",
-                Year = 2019,
-                Region = "La Rioja",
-                Stock = 46,
-                CreatedAt = new DateTime(2021, 3, 10)
-            },
-            new Wine
-            {
-                Id = 3,
-                Name = "Syrah Gran Reserva",
-                Variety = "Syrah",
-                Year = 2020,
-                Region = "Salta",
-                Stock = 28,
-                CreatedAt = new DateTime(2022, 1, 20)
-            },
-            new Wine
-            {
-                Id = 4,
-                Name = "Chardonnay Selección Especial",
-                Variety = "Chardonnay",
-                Year = 2021,
-                Region = "Patagonia",
-                Stock = 63,
-                CreatedAt = new DateTime(2023, 2, 15)
-            },
-            new Wine
-            {
-                Id = 5,
-                Name = "Torrontés Vintage",
-                Variety = "Torrontés",
-                Year = 2022,
-                Region = "Catamarca",
-                Stock = 28,
-                CreatedAt = new DateTime(2023, 6, 5)
-            }
-        };
+            _context = context;
+        }
+
         public List<Wine> GetWines()
         {
-            return wines;
+            return _context.Wine.ToList(); 
         }
+
         public void AddWine(Wine wine)
         {
-            wines.Add(wine);
+            _context.Wine.Add(wine);
+            _context.SaveChanges(); 
         }
+
+        public Wine? Get(int id)
+        {
+            return _context.Wine.Find(id);
+        }
+
         public Dictionary<string, int> GetAllWinesStock()
         {
-            return wines.ToDictionary(wine => wine.Name, wine => wine.Stock);
+            return _context.Wine.ToDictionary(wine => wine.Name, wine => wine.Stock);
+        }
+
+        public void WineStockUpdate(int id, int stock)
+        {
+            _context.Wine.Single(w => w.Id == id).Stock = stock;
+            _context.SaveChanges();
         }
     }
 }

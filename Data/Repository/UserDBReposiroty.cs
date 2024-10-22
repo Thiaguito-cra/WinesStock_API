@@ -1,43 +1,23 @@
 ﻿using Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repository
 {
-    public class UserHardCodedDBRepository : IUserHardCodedDBRepository
+    public class UserDBRepository : IUserDBRepository
     {
-
-        private List<User> users = new List<User>()
+        private readonly ApplicationContext _context;
+        public UserDBRepository(ApplicationContext context)
         {
-            new User
-            {
-                Id = 1,
-                Username = "admin",
-                Password = "admin"
-            },
-            new User
-            {
-                Id = 2,
-                Username = "Carlos",
-                Password = "Carlos123456789"
-            },
-            new User
-            {
-                Id = 3,
-                Username = "Carlos2",
-                Password = "Carlos123456789"
-            }
-        };
-        public List<User> GetUsers()
-        {
-            return users;
+            _context = context;
         }
-        public void AddUser(User user)
+
+        public List<User> Get()
         {
-            users.Add(user);
+            return _context.Users.ToList();
+        }
+
+        public User? Get(string username)
+        {
+            return _context.Users.FirstOrDefault(u => u.Username == username);
         }
     }
 }

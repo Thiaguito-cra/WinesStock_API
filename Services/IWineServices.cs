@@ -11,5 +11,6 @@ namespace Services
     {
         void AddWine(WineDTO wine);
         Dictionary<string, int> GetAllWinesStock();
+        void WineStockUpdate(int wineId, int newStock);
     }
 }
